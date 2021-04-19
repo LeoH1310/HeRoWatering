@@ -27,7 +27,7 @@
     <ClInclude Include="Credentials.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DriverWiFi.h">
+    <ClInclude Include="WiFiManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="RtcAlarmManager.h">
@@ -39,9 +39,12 @@
     <ClInclude Include="SensorManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="DatabaseManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DriverWiFi.cpp">
+    <ClCompile Include="WiFiManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="RtcAlarmManager.cpp">
@@ -51,6 +54,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SensorManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DatabaseManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

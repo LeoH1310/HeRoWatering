@@ -1,7 +1,6 @@
 #pragma once
 
 #include "arduino.h"
-#include <string>
 
 using namespace std;
 
@@ -17,3 +16,10 @@ extern const double longitude = 12.10671662706796;
 extern const float timezone = +2.0;
 
 extern const int offsetMin = 30;
+
+extern const IPAddress SQL_IP(192, 168, 100, 10);
+extern const uint16_t SQL_PORT = 3306;
+extern const char* SQL_DB = "AquaHeRo";
+extern const char* SQL_TABLE = "EventLog";
+extern char* SQL_USER = "HeRo";
+extern char* SQL_PASS = "LeoSabi_782013";
