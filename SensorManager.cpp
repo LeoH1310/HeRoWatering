@@ -12,3 +12,24 @@ bool checkWaterLevel() {
 }
 
 
+bool checkMoistureLevel() {
+
+	Moisture moistureErdbeeren = sensorErdbeeren->getValue();
+	Moisture moistureTomaten = sensorTomaten->getValue();
+
+	bool watering;
+	if (moistureErdbeeren.priority + moistureTomaten.priority >= 0) {
+		// Bewässerung notwendig
+		watering = true;
+	}
+	else {
+		// Keine Bewässerung notwendig
+		watering = false;
+	}
+
+	//ToDo: logging
+
+	return watering;
+}
+
+

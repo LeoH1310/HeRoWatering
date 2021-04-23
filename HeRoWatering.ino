@@ -10,9 +10,7 @@
 #include "EmailMangager.h"
 #include "SensorManager.h"
 #include "DatabaseManager.h"
-
-// ArduinoBlue Library
-//#include <ArduinoBlue.h>
+#include "MoistureSensor.h"
 
 RTCZero rtc;
 WiFiClient client;

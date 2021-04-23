@@ -121,6 +121,7 @@
   <ItemGroup>
     <ClInclude Include="Credentials.h" />
     <ClInclude Include="DatabaseManager.h" />
+    <ClInclude Include="MoistureSensor.h" />
     <ClInclude Include="WiFiManager.h" />
     <ClInclude Include="EmailMangager.h" />
     <ClInclude Include="RtcAlarmManager.h" />
@@ -129,6 +130,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DatabaseManager.cpp" />
+    <ClCompile Include="MoistureSensor.cpp" />
     <ClCompile Include="WiFiManager.cpp" />
     <ClCompile Include="EmailMangager.cpp" />
     <ClCompile Include="RtcAlarmManager.cpp" />

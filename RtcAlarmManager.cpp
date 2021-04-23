@@ -10,7 +10,7 @@ void initRTC() {
 	updateRTC();
 
 	char time[8];
-	sprintf(time, "%d:%d:%d", rtc.getHours(), rtc.getMinutes(), rtc.getSeconds());
+	sprintf(time, "%02d:%02d:%02d", rtc.getHours(), rtc.getMinutes(), rtc.getSeconds());
 	Serial.print("Now is: ");
 	Serial.println(time);
 
@@ -27,15 +27,15 @@ void setMeasureAlarm() {
 	int timeMins = getMinutesSinceMidnight();
 
 	char date[10];
-	sprintf(date, "%d.%d.%d", rtc.getDay(), rtc.getMonth(), rtc.getYear());
+	sprintf(date, "%02d.%02d.%02d", rtc.getDay(), rtc.getMonth(), rtc.getYear());
 	Serial.print("Today is: ");
 	Serial.println(date);
 	char sunriseStr[5];
-	sprintf(sunriseStr, "%d:%d", sunriseMins / 60, sunriseMins % 60);
+	sprintf(sunriseStr, "%02d:%02d", sunriseMins / 60, sunriseMins % 60);
 	Serial.print("Todays Sunrise: ");
 	Serial.println(sunriseStr);
 	char sunsetStr[5];
-	sprintf(sunsetStr, "%d:%d", sunsetMins / 60, sunsetMins % 60);
+	sprintf(sunsetStr, "%02d:%02d", sunsetMins / 60, sunsetMins % 60);
 	Serial.print("Todays Sunset: ");
 	Serial.println(sunsetStr);
 
