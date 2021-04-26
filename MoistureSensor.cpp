@@ -9,6 +9,7 @@ MoistureSensor::MoistureSensor(int pin, int air, int water) {
 	MoistureSensor::sensorAir = air;
 	MoistureSensor::sensorWater = water;
 	MoistureSensor::sensorIntervals = (air - water) / 5;
+	MoistureSensor::currentMoisture = new Moisture();
 }
 
 Moisture MoistureSensor::getValue() {
@@ -18,17 +19,18 @@ Moisture MoistureSensor::getValue() {
 		delay(100);
 	}
 	rawValue /= 5;
-	Moisture result {rawValue, MoistureSensor::getMoistureLevel(rawValue)};
+	currentMoisture->rawValue = rawValue;
+	currentMoisture->level = MoistureSensor::getMoistureLevel(rawValue);
 	
-	switch (result.level) {
-	case MoistureLevel::veryWet:	result.priority = -10;
-	case MoistureLevel::wet:		result.priority = -5;
-	case MoistureLevel::damp:		result.priority = 0;
-	case MoistureLevel::dry:		result.priority = 5;
-	case MoistureLevel::veryDry:	result.priority = 11;
+	switch (currentMoisture->level) {
+	case MoistureLevel::veryWet:	currentMoisture->priority = -10;
+	case MoistureLevel::wet:		currentMoisture->priority = -5;
+	case MoistureLevel::damp:		currentMoisture->priority = 0;
+	case MoistureLevel::dry:		currentMoisture->priority = 5;
+	case MoistureLevel::veryDry:	currentMoisture->priority = 11;
 	}
 
-	return result;
+	return *this->currentMoisture;
 }
 
 MoistureLevel MoistureSensor::getMoistureLevel(int raw) {
@@ -48,3 +50,16 @@ MoistureLevel MoistureSensor::getMoistureLevel(int raw) {
 		return MoistureLevel::veryDry;
 	}
 }
+
+char* Moisture::getName() {
+	char* s("unknown");
+	switch (this->level)    {
+	case 0: { s = "veryWet"; } break;
+	case 1: { s = "wet"; } break;
+	case 2: { s = "damp"; } break;
+	case 3: { s = "dry"; } break;
+	case 4: { s = "veryDry"; } break;
+	}
+	return s;
+}
+

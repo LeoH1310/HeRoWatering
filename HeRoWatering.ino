@@ -12,6 +12,8 @@
 #include "DatabaseManager.h"
 #include "MoistureSensor.h"
 
+extern const int waterLevelPin;
+
 RTCZero rtc;
 WiFiClient client;
 WiFiUDP ntpUdp;
@@ -23,16 +25,23 @@ void setup() {
 	// Debugging
 	Serial.begin(115200);
 
-	connectWiFi();
-	initRTC();
+	// cofig waterlevel pin
+	pinMode(waterLevelPin, INPUT_PULLUP);
+	
+	// config pump pin and set pump initial off
+	pinMode(pumpPin, OUTPUT);
+	digitalWrite(pumpPin, false);
 
-	logToDatabase(123, "Test123", 456, "Test456", false, true);
+	// connect to wifi network
+	connectWiFi();
+
+	// initialize RTC and set firt measurement alarm
+	initRTC();
 }
 
 // the loop function runs over and over again until power down or reset
 void loop() {
-  
-	//rtc.standbyMode();    // sleep until next alarm match
+	// nothing to do here. everything is controlled by RTC alarm events.
 }
 
 

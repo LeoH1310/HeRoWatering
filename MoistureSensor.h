@@ -4,14 +4,15 @@
 
 #include "arduino.h"
 
-#include "Credentials.h"
-
 enum MoistureLevel {veryWet, wet, damp, dry, veryDry};
 
-struct Moisture {
+class Moisture {
+public:
 	int rawValue;
-	MoistureLevel level;
 	int priority;
+	MoistureLevel level;
+
+	char* getName();
 };
 
 class MoistureSensor
@@ -21,10 +22,13 @@ private:
 	int sensorAir;
 	int sensorWater;
 	int sensorIntervals;
+	Moisture * currentMoisture;
+
 	MoistureLevel getMoistureLevel(int raw);
 
 public:
 	 MoistureSensor(int pin, int air, int water);
+
 	 Moisture getValue();
 };
 
