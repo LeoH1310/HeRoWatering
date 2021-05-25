@@ -12,6 +12,7 @@
 #include "SensorManager.h"
 #include "DatabaseManager.h"
 #include "EmailMangager.h"
+#include "WiFiManager.h"
 
 extern RTCZero rtc;
 extern NTPClient timeClient;

@@ -8,15 +8,16 @@ bool checkWaterLevel() {
 	return (digitalRead(waterLevelPin));
 }
 
-bool checkForWatering(Moisture moistureErdbeeren, Moisture moistureTomaten) {
+int checkForWatering(Moisture moistureErdbeeren, Moisture moistureTomaten) {
 
 	if (moistureErdbeeren.priority + moistureTomaten.priority >= 0) {
 		// Bewässerung notwendig
-		return true;
+		// Priorität bestimmt Wassermenge
+		return std::max(moistureErdbeeren.priority, moistureTomaten.priority);
 	}
 	else {
 		// Keine Bewässerung notwendig
-		return false;
+		return 0;
 	}
 }
 

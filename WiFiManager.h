@@ -13,5 +13,8 @@ extern const char* HOST;
 extern const char* SSID;
 extern const char* PASS;
 
+extern void reboot();
+
 void connectWiFi();
+void checkWifiConnection();
 

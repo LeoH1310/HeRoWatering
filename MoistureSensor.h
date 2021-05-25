@@ -4,7 +4,7 @@
 
 #include "arduino.h"
 
-enum MoistureLevel {veryWet, wet, damp, dry, veryDry};
+enum MoistureLevel {water, veryWet, wet, damp, dry, veryDry, air};
 
 class Moisture {
 public:

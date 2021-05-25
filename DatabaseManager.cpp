@@ -13,7 +13,7 @@ void logToDatabase(int raw1, char* txt1, int raw2, char* txt2, bool act, bool wa
 
 		// build SQL query
 		char query[256];
-		char INSERT_DATA[] = "INSERT INTO %s.%s (Timestamp, Sensor1_raw, Sensor1_txt, Sensor2_raw, Sensor2_txt, Action, Waterlevel) VALUES ('%s',%d,'%s',%d,'%s',%d,%d)";
+		char INSERT_DATA[] = "INSERT INTO %s.%s (Timestamp, Sensor1_raw, Sensor1_txt, Sensor2_raw, Sensor2_txt, WaterAmount, Waterlevel) VALUES ('%s',%d,'%s',%d,'%s',%d,%d)";
 		char timeStr[20];
 		sprintf(timeStr, "20%02d-%02d-%02d %02d:%02d:%02d", rtc.getYear(), rtc.getMonth(), rtc.getDay(), rtc.getHours(), rtc.getMinutes(), rtc.getSeconds());
 		sprintf(query, INSERT_DATA, SQL_DB, SQL_TABLE, timeStr, raw1, txt1, raw2, txt2, act, water);
