@@ -82,14 +82,17 @@ void setup() {
 void loop() {
 	if (flag_runMeasurement) {
 		flag_runMeasurement = false;
+		delay(1000);	// wait 1 second
 		runMeasurement(sensorErdbeeren, sensorTomaten);
 	}
 	if (flag_stopWatering) {
 		flag_stopWatering = false;
+		delay(1000);	// wait 1 second
 		stopWatering();
 	}
 	if (flag_updateWeather) {
 		flag_updateWeather = false;
+		delay(1000);	// wait 1 second
 		tomorrow->update(clientSecure);
 	}
 }

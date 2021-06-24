@@ -19,9 +19,9 @@ void setNextMeasureAlarm() {
 	SunSet sun;
 	sun.setPosition(latitude, longitude, timezone);
 	sun.setCurrentDate(rtc.getYear(), rtc.getMonth(), rtc.getDay());
-	int sunriseMins = sun.calcSunrise();
-	int sunsetMins = sun.calcSunset();
-	int timeMins = getMinutesSinceMidnight();
+	long sunriseSecs = sun.calcSunrise() * 60;
+	long sunsetSecs = sun.calcSunset() * 60;
+	long timeSecs = getSecondsSinceMidnight();
 
 	char time[8];
 	sprintf(time, "%02d:%02d:%02d", rtc.getHours(), rtc.getMinutes(), rtc.getSeconds());
@@ -32,30 +32,29 @@ void setNextMeasureAlarm() {
 	Serial.print("Today is: ");
 	Serial.println(date);
 	char sunriseStr[5];
-	sprintf(sunriseStr, "%02d:%02d", sunriseMins / 60, sunriseMins % 60);
+	sprintf(sunriseStr, "%02d:%02d", (int)(sunriseSecs / 3600), (int)(sunriseSecs / 60) - ((int)(sunriseSecs / 3600) * 60));
 	Serial.print("Todays Sunrise: ");
 	Serial.println(sunriseStr);
 	char sunsetStr[5];
-	sprintf(sunsetStr, "%02d:%02d", sunsetMins / 60, sunsetMins % 60);
+	sprintf(sunsetStr, "%02d:%02d", (int)(sunsetSecs / 3600), (int)(sunsetSecs / 60) - ((int)(sunsetSecs / 3600) * 60));
 	Serial.print("Todays Sunset: ");
 	Serial.println(sunsetStr);
 
-
 	// check what event is next
 	int alarmMins = 0;
-	if (timeMins >= sunsetMins - offsetMin || timeMins < sunriseMins + offsetMin) {
+	if (timeSecs >= sunsetSecs - (offsetMin * 60) || timeSecs < sunriseSecs + (offsetMin * 60)) {
 		// sunrise is next - set alarm to sunrise time + offset
-		alarmMins = sunriseMins + offsetMin;
+		alarmMins = (sunriseSecs / 60) + offsetMin;
 		rtc.setAlarmTime(alarmMins / 60, alarmMins % 60, 0);
 	}
 	else {
 		// sunset is next - set alarm to sunset time - offset
-		alarmMins = sunsetMins - offsetMin;
+		alarmMins = (sunsetSecs / 60) - offsetMin;
 		rtc.setAlarmTime(alarmMins / 60, alarmMins % 60, 0);
 	}
 
 	#ifdef TESTING
-		rtc.setAlarmEpoch(rtc.getEpoch() + 60*2);	// RTC Alarm evry 2 minutes
+		rtc.setAlarmEpoch(rtc.getEpoch() + 60*2);	// RTC Alarm every 2 minutes
 	#endif	// TESTING
 
 	char alarmTime[5];
@@ -69,11 +68,13 @@ void setNextMeasureAlarm() {
 	rtc.attachInterrupt(ISR_RTC_Measurement);
 }
 
-int getMinutesSinceMidnight() {
-	int minutes;
-	minutes = rtc.getHours() * 60;
-	minutes += rtc.getMinutes();
-	return minutes;
+long getSecondsSinceMidnight() {
+	long seconds;
+	seconds = rtc.getHours() * 60 * 60;
+	seconds += rtc.getMinutes() * 60;
+	seconds += rtc.getSeconds();
+
+	return seconds;
 }
 
 void updateRTC() {

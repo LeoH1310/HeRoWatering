@@ -38,7 +38,7 @@ void runMeasurement(MoistureSensor* sensorErdbeeren, MoistureSensor* sensorTomat
 void stopWatering();
 
 void setNextMeasureAlarm();
-int getMinutesSinceMidnight();
+long getSecondsSinceMidnight();
 
 
 
