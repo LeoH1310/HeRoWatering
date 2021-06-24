@@ -24,10 +24,21 @@ extern const int offsetMin;
 extern const int wateringTimeMin;
 extern const int pumpPin;
 
-void initRTC();
-void setNextMeasureAlarm();
-int getMinutesSinceMidnight();
-void updateRTC();
+extern volatile boolean flag_runMeasurement;
+extern volatile boolean flag_stopWatering;
+extern volatile boolean flag_updateWeather;
+
 void ISR_RTC_Measurement();
 void ISR_RTC_StopWatering();
+
+void initRTC();
+void updateRTC();
+
+void runMeasurement(MoistureSensor* sensorErdbeeren, MoistureSensor* sensorTomaten);
+void stopWatering();
+
+void setNextMeasureAlarm();
+int getMinutesSinceMidnight();
+
+
 

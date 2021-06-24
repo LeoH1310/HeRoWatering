@@ -22,7 +22,7 @@ extern const char* SQL_TABLE;
 extern char* SQL_USER;
 extern char* SQL_PASS;
 
-void logToDatabase(int raw1, char* txt1, int raw2, char* txt2, bool act, bool water);
+void logToDatabase(int raw1, char* txt1, int raw2, char* txt2, int act, bool water);
 
 
 

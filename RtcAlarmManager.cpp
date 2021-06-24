@@ -7,9 +7,6 @@
 #include "RtcAlarmManager.h"
 #include <CuteBuzzerSounds.h>
 
-MoistureSensor* sensorErdbeeren = new MoistureSensor(sensor1Pin, sensor1Air, sensor1Water);
-MoistureSensor* sensorTomaten = new MoistureSensor(sensor2Pin, sensor2Air, sensor2Water);
-
 void initRTC() {
 	rtc.begin();
 	timeClient.begin();
@@ -68,9 +65,6 @@ void setNextMeasureAlarm() {
 
 	Serial.println("**********EndTime**********");
 
-	// update rtc time from web to keep in sync
-	updateRTC();
-
 	rtc.enableAlarm(rtc.MATCH_HHMMSS);
 	rtc.attachInterrupt(ISR_RTC_Measurement);
 }
@@ -87,32 +81,32 @@ void updateRTC() {
 	checkWifiConnection();
 
 	Serial.println("updating rtc...");
-	bool status = timeClient.update();
+	timeClient.update();
 	delay(200);
 
-	int i = 1;
-	while (!status && i < 5) {
-		Serial.print("updating rtc failed #");
-		Serial.print(i);
-		Serial.println(". retrying...");
-		status = timeClient.forceUpdate();
-		delay(200);
-		i++;
-	}
-
-	if (i < 5) {
-		Serial.println("updating rtc successful :)");
-		rtc.setEpoch(timeClient.getEpochTime() + (timezone * 3600));	// set rtc system time from internet time
-		char time[8];
-		sprintf(time, "%02d:%02d:%02d", rtc.getHours(), rtc.getMinutes(), rtc.getSeconds());
-		Serial.print("Time after update: ");
-		Serial.println(time);
-	}
-	// reboot if rtc update failed 5 times
-	else reboot();
+	rtc.setEpoch(timeClient.getEpochTime());	// set rtc system time from internet time
+	char time[8];
+	sprintf(time, "%02d:%02d:%02d", rtc.getHours(), rtc.getMinutes(), rtc.getSeconds());
+	Serial.print("Time after update: ");
+	Serial.println(time);
 }
 
 void ISR_RTC_Measurement() {
+	flag_runMeasurement = true;
+}
+
+void ISR_RTC_StopWatering() {
+	flag_stopWatering = true;
+}
+
+void ISR_UPDATE_WEATHER() {
+	flag_updateWeather = true;
+}
+
+void runMeasurement(MoistureSensor* sensorErdbeeren, MoistureSensor* sensorTomaten) {
+	// update rtc time from web to keep in sync
+	updateRTC();
+
 	// read waterlevel sensor
 	bool waterLevel = checkWaterLevel();
 	// read moisture sensors
@@ -180,7 +174,9 @@ void ISR_RTC_Measurement() {
 	//rtc.standbyMode();
 }
 
-void ISR_RTC_StopWatering() {
+
+
+void stopWatering() {
 	// stop watering
 	digitalWrite(pumpPin, false);
 

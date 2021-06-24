@@ -4,7 +4,7 @@
 
 #include "DatabaseManager.h"
 
-void logToDatabase(int raw1, char* txt1, int raw2, char* txt2, bool act, bool water) {
+void logToDatabase(int raw1, char* txt1, int raw2, char* txt2, int act, bool water) {
 	MySQL_Connection conn((Client*)&client);
 	Serial.println("SQL-Server connecting...");
 	if (conn.connect(SQL_IP, SQL_PORT, SQL_USER, SQL_PASS)) {
