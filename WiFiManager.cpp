@@ -3,6 +3,7 @@
 // 
 
 #include "WiFiManager.h"
+#include "Logging.h"
 #include <CuteBuzzerSounds.h>
 
 void connectWiFi() {
@@ -38,6 +39,3 @@ void connectWiFi() {
 void checkWifiConnection() {
 	if (WiFi.status() != WL_CONNECTED) connectWiFi();
 }
-
-
-

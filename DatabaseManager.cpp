@@ -3,12 +3,16 @@
 // 
 
 #include "DatabaseManager.h"
+#include "logging.h"
 
 void logToDatabase(int raw1, char* txt1, int raw2, char* txt2, int act, bool water) {
+	// check if WiFi connection is established, if not reconnect
+	checkWifiConnection();
+
 	MySQL_Connection conn((Client*)&client);
-	Serial.println("SQL-Server connecting...");
+	myPrintln("SQL-Server connecting...");
 	if (conn.connect(SQL_IP, SQL_PORT, SQL_USER, SQL_PASS)) {
-		Serial.println("SQL-Server connection OK.");
+		myPrintln("SQL-Server connected.");
 		delay(1000);
 
 		// build SQL query
@@ -25,7 +29,7 @@ void logToDatabase(int raw1, char* txt1, int raw2, char* txt2, int act, bool wat
 		delete cur_mem;
 	}
 	else {
-		Serial.println("SQL-Server connection failed.");
+		myPrintln("SQL-Server connection failed.");
 	}
 	conn.close();
 }

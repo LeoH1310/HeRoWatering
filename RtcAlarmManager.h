@@ -14,6 +14,8 @@
 #include "EmailMangager.h"
 #include "WiFiManager.h"
 
+enum alarmFlag { initial, sunrise, sunset, update };
+
 extern RTCZero rtc;
 extern NTPClient timeClient;
 
@@ -30,6 +32,7 @@ extern volatile boolean flag_updateWeather;
 
 void ISR_RTC_Measurement();
 void ISR_RTC_StopWatering();
+void ISR_UPDATE_WEATHER();
 
 void initRTC();
 void updateRTC();

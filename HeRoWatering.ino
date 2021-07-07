@@ -5,9 +5,8 @@
 */
 
 //#define DEBUGDELAY
+//#define TELNET
 
-#include "WeatherAPI.h"
-#include <Sodaq_wdt.h>
 #include "Credentials.h"
 #include "WiFiManager.h"
 #include "RtcAlarmManager.h"
@@ -15,19 +14,23 @@
 #include "SensorManager.h"
 #include "DatabaseManager.h"
 #include "MoistureSensor.h"
+#include "WeatherAPI.h"
+#include "Logging.h"
 
 #include <Sounds.h>
 #include <CuteBuzzerSounds.h>
+#include <Sodaq_wdt.h>
 
 extern const int waterLevelPin;
 extern const int BUZZER_PIN;
 
 RTCZero rtc;
+WiFiServer telnetServer(23);
+WiFiClient telnetClient;
 WiFiClient client;
 WiFiSSLClient clientSecure;
 WiFiUDP ntpUdp;
 NTPClient timeClient(ntpUdp, "de.pool.ntp.org", timezone * 3600, 86400000);
-EMailSender emailSender(MAIL, MAILPASS);
 
 MoistureSensor* sensorErdbeeren = new MoistureSensor(sensor1Pin, sensor1Air, sensor1Water);
 MoistureSensor* sensorTomaten = new MoistureSensor(sensor2Pin, sensor2Air, sensor2Water);
@@ -37,6 +40,10 @@ Weather* tomorrow = new Weather();
 extern volatile boolean flag_runMeasurement = false;
 extern volatile boolean flag_stopWatering = false;
 extern volatile boolean flag_updateWeather = false;
+
+boolean alreadyConnected = false; // whether or not the telnetClient was connected previously
+
+uint64_t startMillis = millis();
 
 // the setup function runs once when you press reset or power the board
 void setup() {
@@ -71,36 +78,89 @@ void setup() {
 	connectWiFi();
 	WiFi.lowPowerMode();	// enable WiFi low power mode
 
+	#ifdef TELNET
+	telnetServer.begin();
+	delay(1000);
+	myPrintln("**********start up telnet ***********");
+	#endif 
+
 	// initialize RTC and set firt measurement alarm
 	initRTC();
-
-	// Testing
-	//flag_updateWeather = true;
 }
 
 // the loop function runs over and over again until power down or reset
 void loop() {
 	if (flag_runMeasurement) {
-		flag_runMeasurement = false;
+		rtc.disableAlarm();
+		rtc.detachInterrupt();
 		delay(1000);	// wait 1 second
+		flag_runMeasurement = false;
 		runMeasurement(sensorErdbeeren, sensorTomaten);
 	}
 	if (flag_stopWatering) {
-		flag_stopWatering = false;
+		rtc.disableAlarm();
+		rtc.detachInterrupt();
 		delay(1000);	// wait 1 second
+		flag_stopWatering = false;
 		stopWatering();
 	}
 	if (flag_updateWeather) {
-		flag_updateWeather = false;
+		rtc.disableAlarm();
+		rtc.detachInterrupt();
 		delay(1000);	// wait 1 second
-		tomorrow->update(clientSecure);
+		flag_updateWeather = false;
+		updateRTC();
+		delay(100);
+		//tomorrow->update(clientSecure);
+		setNextMeasureAlarm();
 	}
+
+	#ifdef TELNET
+	// check for a new client:
+	telnetClient = telnetServer.available();
+
+	// when the client sends the first byte, say hello:
+	if (telnetClient) {
+		if (!alreadyConnected) {
+			// clear out the input buffer:
+			telnetClient.flush();
+			telnetClient.println("Welcome to AquHeRo DEBUGGING!");
+			telnetClient.println("e for exit");
+			telnetClient.println("r for reset");
+			alreadyConnected = true;
+		}
+
+		if (telnetClient.available() > 0) {
+			// read the bytes incoming from the client:
+			char input = telnetClient.read();
+
+			if (input == 'r') {
+				telnetClient.println();
+				telnetClient.println("reboot...");
+				telnetClient.println();
+				telnetClient.println("bye bye!");
+				telnetClient.stop(); // cleans up memory
+				telnetClient = telnetServer.available(); // evaluates to false if no connection
+				alreadyConnected = false;
+				reboot();
+			}
+			if (input == 'e') {
+				telnetClient.println();
+				telnetClient.println("bye bye!");
+				telnetClient.stop(); // cleans up memory
+				telnetClient = telnetServer.available(); // evaluates to false if no connection
+				alreadyConnected = false;
+			}
+		}
+	}
+	#endif 
 }
 
 void reboot() {
-	Serial.println("reset triggert ..");
+	myPrintln("reset triggert ..");
 	cute.play(S_CUDDLY);
 	sodaq_wdt_enable(WDT_PERIOD_1DIV2);
+	delay(1000);
 	sodaq_wdt_reset();
 }
 

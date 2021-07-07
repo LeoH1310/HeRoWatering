@@ -4,9 +4,9 @@
 
 #include "arduino.h"
 
-#include "RtcAlarmManager.h"
 #include "WiFiManager.h"
 
+#include <RTCZero.h>
 #include <MySQL_Packet.h>
 #include <MySQL_Encrypt_Sha1.h>
 #include <MySQL_Cursor.h>

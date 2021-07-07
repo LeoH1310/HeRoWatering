@@ -5,19 +5,56 @@
 //#define TESTING
 
 #include "RtcAlarmManager.h"
+#include "Logging.h"
 #include <CuteBuzzerSounds.h>
+
+SunSet sun;
+alarmFlag alrFlag;
 
 void initRTC() {
 	rtc.begin();
 	timeClient.begin();
 	updateRTC();
+	alrFlag = initial;
+	sun.setPosition(latitude, longitude, timezone);
 	setNextMeasureAlarm();
 }
 
+void getNextAlarmFlag() {
+	long sunriseSecs;
+	long sunsetSecs;
+	long timeSecs;
+
+	switch (alrFlag) 	{		
+	case initial:
+		// get todays sunrise and sunset
+		sun.setCurrentDate(rtc.getYear(), rtc.getMonth(), rtc.getDay());
+		sunriseSecs = sun.calcSunrise() * 60;
+		sunsetSecs = sun.calcSunset() * 60;
+		timeSecs = getSecondsSinceMidnight();
+		// if sunrise is next - set alrFlag to sunrise
+		if (timeSecs >= sunsetSecs - (offsetMin * 60) || timeSecs < sunriseSecs + (offsetMin * 60)) alrFlag = sunrise;
+		// else sunset is next - set alrFlag to sunset
+		else alrFlag = sunset;
+		break;
+
+	case sunrise:
+		alrFlag = sunset;
+		break;
+
+	case sunset:
+		alrFlag = update;
+		break;
+
+	case update:
+		alrFlag = sunrise;
+		break;
+	}
+}
+
 void setNextMeasureAlarm() {
+	getNextAlarmFlag();
 	// get todays sunrise and sunset
-	SunSet sun;
-	sun.setPosition(latitude, longitude, timezone);
 	sun.setCurrentDate(rtc.getYear(), rtc.getMonth(), rtc.getDay());
 	long sunriseSecs = sun.calcSunrise() * 60;
 	long sunsetSecs = sun.calcSunset() * 60;
@@ -25,33 +62,45 @@ void setNextMeasureAlarm() {
 
 	char time[8];
 	sprintf(time, "%02d:%02d:%02d", rtc.getHours(), rtc.getMinutes(), rtc.getSeconds());
-	Serial.print("Now is: ");
-	Serial.println(time);
+	myPrint("Now is: ");
+	myPrintln(time);
 	char date[10];
 	sprintf(date, "%02d.%02d.%02d", rtc.getDay(), rtc.getMonth(), rtc.getYear());
-	Serial.print("Today is: ");
-	Serial.println(date);
+	myPrint("Today is: ");
+	myPrintln(date);
 	char sunriseStr[5];
 	sprintf(sunriseStr, "%02d:%02d", (int)(sunriseSecs / 3600), (int)(sunriseSecs / 60) - ((int)(sunriseSecs / 3600) * 60));
-	Serial.print("Todays Sunrise: ");
-	Serial.println(sunriseStr);
+	myPrint("Todays Sunrise: ");
+	myPrintln(sunriseStr);
 	char sunsetStr[5];
 	sprintf(sunsetStr, "%02d:%02d", (int)(sunsetSecs / 3600), (int)(sunsetSecs / 60) - ((int)(sunsetSecs / 3600) * 60));
-	Serial.print("Todays Sunset: ");
-	Serial.println(sunsetStr);
+	myPrint("Todays Sunset: ");
+	myPrintln(sunsetStr);
 
 	// check what event is next
 	int alarmMins = 0;
-	if (timeSecs >= sunsetSecs - (offsetMin * 60) || timeSecs < sunriseSecs + (offsetMin * 60)) {
-		// sunrise is next - set alarm to sunrise time + offset
+	switch (alrFlag) {
+	case sunrise:
 		alarmMins = (sunriseSecs / 60) + offsetMin;
 		rtc.setAlarmTime(alarmMins / 60, alarmMins % 60, 0);
-	}
-	else {
-		// sunset is next - set alarm to sunset time - offset
+		rtc.enableAlarm(rtc.MATCH_HHMMSS);
+		rtc.attachInterrupt(ISR_RTC_Measurement);
+		break;
+
+	case sunset:
 		alarmMins = (sunsetSecs / 60) - offsetMin;
 		rtc.setAlarmTime(alarmMins / 60, alarmMins % 60, 0);
+		rtc.enableAlarm(rtc.MATCH_HHMMSS);
+		rtc.attachInterrupt(ISR_RTC_Measurement);
+		break;
+
+	case update:
+		rtc.setAlarmTime(2, 0, 0);
+		rtc.enableAlarm(rtc.MATCH_HHMMSS);
+		rtc.attachInterrupt(ISR_UPDATE_WEATHER);
+		break;	
 	}
+
 
 	#ifdef TESTING
 		rtc.setAlarmEpoch(rtc.getEpoch() + 60*2);	// RTC Alarm every 2 minutes
@@ -59,13 +108,9 @@ void setNextMeasureAlarm() {
 
 	char alarmTime[5];
 	sprintf(alarmTime, "%02d:%02d:%02d", rtc.getAlarmHours(), rtc.getAlarmMinutes(), rtc.getAlarmSeconds());
-	Serial.print("Next alarm: ");
-	Serial.println(alarmTime);
-
-	Serial.println("**********EndTime**********");
-
-	rtc.enableAlarm(rtc.MATCH_HHMMSS);
-	rtc.attachInterrupt(ISR_RTC_Measurement);
+	myPrint("Next alarm: ");
+	myPrintln(alarmTime);
+	myPrintln("**********EndTime**********");
 }
 
 long getSecondsSinceMidnight() {
@@ -73,7 +118,6 @@ long getSecondsSinceMidnight() {
 	seconds = rtc.getHours() * 60 * 60;
 	seconds += rtc.getMinutes() * 60;
 	seconds += rtc.getSeconds();
-
 	return seconds;
 }
 
@@ -81,32 +125,30 @@ void updateRTC() {
 	// check if WiFi connection is established, if not reconnect
 	checkWifiConnection();
 
-	Serial.println("updating rtc...");
-	timeClient.update();
-	delay(200);
-
-	rtc.setEpoch(timeClient.getEpochTime());	// set rtc system time from internet time
-	char time[8];
-	sprintf(time, "%02d:%02d:%02d", rtc.getHours(), rtc.getMinutes(), rtc.getSeconds());
-	Serial.print("Time after update: ");
-	Serial.println(time);
+	if (timeClient.update()) {
+		myPrintln("updating rtc...");
+		rtc.setEpoch(timeClient.getEpochTime());	// set rtc system time from internet time
+		char time[8];
+		sprintf(time, "%02d:%02d:%02d", rtc.getHours(), rtc.getMinutes(), rtc.getSeconds());
+		myPrint("Time after update: ");
+		myPrintln(time);
+	}
 }
 
 void ISR_RTC_Measurement() {
-	flag_runMeasurement = true;
+	if (!flag_runMeasurement) flag_runMeasurement = true;
 }
 
 void ISR_RTC_StopWatering() {
-	flag_stopWatering = true;
+	if (!flag_stopWatering) flag_stopWatering = true;
 }
 
 void ISR_UPDATE_WEATHER() {
-	flag_updateWeather = true;
+	if (!flag_updateWeather) flag_updateWeather = true;
 }
 
 void runMeasurement(MoistureSensor* sensorErdbeeren, MoistureSensor* sensorTomaten) {
-	// update rtc time from web to keep in sync
-	updateRTC();
+	myPrintln("measurement started..");
 
 	// read waterlevel sensor
 	bool waterLevel = checkWaterLevel();
@@ -116,22 +158,22 @@ void runMeasurement(MoistureSensor* sensorErdbeeren, MoistureSensor* sensorTomat
 
 	int waterAmount = checkForWatering(moistureErdbeeren, moistureTomaten);
 
-	Serial.print("WaterLevel: ");
-	Serial.println(waterLevel);
-	Serial.print("WaterAmount: ");
-	Serial.println(waterAmount);
+	myPrint("WaterLevel: ");
+	myPrintln(waterLevel);
+	myPrint("WaterAmount: ");
+	myPrintln(waterAmount);
 
-	Serial.print("Sens1ErdbeereVal: ");
-	Serial.print(moistureErdbeeren.rawValue);
-	Serial.print(" #");
-	Serial.println(moistureErdbeeren.getName());
+	myPrint("Sens1ErdbeereVal: ");
+	myPrint(moistureErdbeeren.rawValue);
+	myPrint(" #");
+	myPrintln(moistureErdbeeren.getName());
 
-	Serial.print("Sens2TomateVal: ");
-	Serial.print(moistureTomaten.rawValue);
-	Serial.print(" #");
-	Serial.println(moistureTomaten.getName());
+	myPrint("Sens2TomateVal: ");
+	myPrint(moistureTomaten.rawValue);
+	myPrint(" #");
+	myPrintln(moistureTomaten.getName());
 		
-	Serial.println("**********EndData**********");
+	myPrintln("**********EndData**********");
 
 	if (waterLevel) {	// water level OK
 		if (waterAmount > 0) {	// watering necessary
@@ -141,15 +183,14 @@ void runMeasurement(MoistureSensor* sensorErdbeeren, MoistureSensor* sensorTomat
 			rtc.enableAlarm(rtc.MATCH_HHMMSS);
 			rtc.attachInterrupt(ISR_RTC_StopWatering);
 
-			Serial.println("watering started..");
+			myPrintln("watering started..");
 			// play start sound
 			cute.play(S_CONNECTION);
 			// start watering
 			digitalWrite(pumpPin, true);
 		}
 		else {	// no watering necessary
-
-			Serial.println("no watering needed :)");
+			myPrintln("no watering needed :)");
 			// play happy sound
 			cute.play(S_HAPPY);
 
@@ -158,8 +199,7 @@ void runMeasurement(MoistureSensor* sensorErdbeeren, MoistureSensor* sensorTomat
 		}
 	}
 	else {	// water level low
-
-		Serial.println("water level low!");
+		myPrintln("water level low!");
 		// play sad sound
 		cute.play(S_SAD);
 		// send email notification
@@ -170,25 +210,17 @@ void runMeasurement(MoistureSensor* sensorErdbeeren, MoistureSensor* sensorTomat
 
 	// log measurement and decissions to database
 	logToDatabase(moistureErdbeeren.rawValue, moistureErdbeeren.getName(), moistureTomaten.rawValue, moistureTomaten.getName(), waterAmount, waterLevel);
-
-	// sleep arduino till next rtc event
-	//rtc.standbyMode();
 }
-
-
 
 void stopWatering() {
 	// stop watering
 	digitalWrite(pumpPin, false);
 
-	Serial.println("watering stopped.");
+	myPrintln("watering stopped.");
 
 	// play finishing sound
 	cute.play(S_MODE3);
 
 	// set rtc alarm for next measuring
 	setNextMeasureAlarm();
-
-	// sleep arduino till next rtc event
-	//rtc.standbyMode();
 }

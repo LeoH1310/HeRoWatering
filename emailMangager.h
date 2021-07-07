@@ -7,7 +7,6 @@
 // Email Library
 #include <EMailSender.h>
 
-extern EMailSender emailSender;
 extern const char* MAIL;
 extern const char* MAILPASS;
 

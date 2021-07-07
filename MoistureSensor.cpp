@@ -2,6 +2,8 @@
 // 
 // 
 
+#define RUNS 25
+
 #include "MoistureSensor.h"
 
 MoistureSensor::MoistureSensor(int pin, int air, int water) {
@@ -14,11 +16,11 @@ MoistureSensor::MoistureSensor(int pin, int air, int water) {
 
 Moisture MoistureSensor::getValue() {
 	int rawValue = 0;
-	for (int i = 0; i < 5; i++) {
+	for (int i = 0; i < RUNS; i++) {
 		rawValue += analogRead(MoistureSensor::sonsorPin);
 		delay(100);
 	}
-	rawValue /= 5;
+	rawValue /= RUNS;
 	currentMoisture->rawValue = rawValue;
 	currentMoisture->level = MoistureSensor::getMoistureLevel(rawValue);
 	
