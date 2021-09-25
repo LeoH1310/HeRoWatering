@@ -23,6 +23,7 @@
 
 extern const int waterLevelPin;
 extern const int BUZZER_PIN;
+extern const unsigned long updateInterval;
 
 RTCZero rtc;
 WiFiServer telnetServer(23);
@@ -30,7 +31,7 @@ WiFiClient telnetClient;
 WiFiClient client;
 WiFiSSLClient clientSecure;
 WiFiUDP ntpUdp;
-NTPClient timeClient(ntpUdp, "de.pool.ntp.org", timezone * 3600, 86400000);
+NTPClient timeClient(ntpUdp, "de.pool.ntp.org", timezone * 3600, updateInterval);
 
 MoistureSensor* sensorErdbeeren = new MoistureSensor(sensor1Pin, sensor1Air, sensor1Water);
 MoistureSensor* sensorTomaten = new MoistureSensor(sensor2Pin, sensor2Air, sensor2Water);
