@@ -32,8 +32,6 @@ void connectWiFi() {
 	}
 	// reboot if wifi connection failed 5 times
 	else reboot();
-
-	
 }
 
 void checkWifiConnection() {
