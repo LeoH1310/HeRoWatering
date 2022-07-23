@@ -364,3 +364,4 @@ FodyWeavers.xsd
 
 # ignore credentials
 Credentials.h
+Credentials.cpp

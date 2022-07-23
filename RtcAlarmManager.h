@@ -19,13 +19,6 @@ enum alarmFlag { initial, sunrise, sunset, update };
 extern RTCZero rtc;
 extern NTPClient timeClient;
 
-extern const double longitude;
-extern const double latitude;
-extern const float timezone;
-extern const int offsetMin;
-extern const int wateringTimeMin;
-extern const int pumpPin;
-
 extern volatile boolean flag_runMeasurement;
 extern volatile boolean flag_stopWatering;
 extern volatile boolean flag_updateWeather;

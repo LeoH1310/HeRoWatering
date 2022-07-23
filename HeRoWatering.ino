@@ -7,6 +7,7 @@
 //#define DEBUGDELAY
 //#define TELNET
 
+#include <EMailSender.h>
 #include "Credentials.h"
 #include "WiFiManager.h"
 #include "RtcAlarmManager.h"
@@ -85,7 +86,10 @@ void setup() {
 	myPrintln("**********start up telnet ***********");
 	#endif 
 
-	// initialize RTC and set firt measurement alarm
+	// debug email
+	//bool sendStatus = sendEmail("AquaHeRo: Wasserstand kritisch!", "Der Wasserstand ist zu niedrig, um AquaHeRo zu starten.", (char*)MAIL_RECEIVER);
+
+	// initialize RTC and set first measurement alarm
 	initRTC();
 }
 

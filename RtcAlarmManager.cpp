@@ -6,6 +6,8 @@
 
 #include "RtcAlarmManager.h"
 #include "Logging.h"
+#include "Credentials.h"
+
 #include <CuteBuzzerSounds.h>
 
 SunSet sun;
@@ -203,7 +205,7 @@ void runMeasurement(MoistureSensor* sensorErdbeeren, MoistureSensor* sensorTomat
 		// play sad sound
 		cute.play(S_SAD);
 		// send email notification
-		bool sendStatus = sendEmail("AquaHeRo: Wasserstand kritisch!", "Der Wasserstand ist zu niedrig, um AquaHeRo zu starten.", "hesseleo1310@gmail.com");
+		bool sendStatus = sendEmail("AquaHeRo: Wasserstand kritisch!", "Der Wasserstand ist zu niedrig, um AquaHeRo zu starten.", (char*)MAIL_RECEIVER);
 		// set rtc alarm for next measuring
 		setNextMeasureAlarm();
 	}
