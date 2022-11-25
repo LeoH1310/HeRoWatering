@@ -6,91 +6,442 @@
 			All non-arduino files created by visual micro and all visual studio project or solution files can be freely deleted and are not required to compile a sketch (do not delete your own code!).
 			Note: debugger breakpoints are stored in '.sln' or '.asln' files, knowledge of last uploaded breakpoints is stored in the upload.vmps.xml file. Both files are required to continue a previous debug session without needing to compile and upload again
 	
-	Hardware: Arduino Nano Every, Platform=megaavr, Package=arduino
+	Hardware: Arduino NANO 33 IoT, Platform=samd, Package=arduino
 */
 
 #if defined(_VMICRO_INTELLISENSE)
 
 #ifndef _VSARDUINO_H_
 #define _VSARDUINO_H_
-#define __AVR_atmega4809__
-#define __MEGAAVR_ATmega4809__
-#define __AVR_ATmega4809__
-#define F_CPU 16000000L
+#define F_CPU 48000000L
 #define ARDUINO 108013
-#define ARDUINO_AVR_NANO_EVERY
-#define ARDUINO_ARCH_MEGAAVR
-#define AVR_NANO_4809_328MODE
-#define MILLIS_USE_TIMERB3
-#define NO_EXTERNAL_I2C_PULLUP
+#define ARDUINO_SAMD_NANO_33_IOT
+#define ARDUINO_ARCH_SAMD
+#define CRYSTALLESS
+#define __SAMD21G18A__
+#define USB_VID 0x2341
+#define USB_PID 0x8057
+#define USBCON
 #define __cplusplus 201103L
+#define __GNUC__ 2
 #define _Pragma(x)
-#define __AVR__
+//#define __ARMCC_VERSION 6010050
+#define	_ISOC11_SOURCE
+
+#define __PTRDIFF_TYPE__ int
+#define __ARM__
+#define __arm__
+#define always_inline
 #define __inline__
-#define __asm__(...)
+#define __asm__(x)
+#define __attribute__(x)
 #define __extension__
+#define __ATTR_PURE__
+#define __ATTR_CONST__
 #define __inline__
 #define __volatile__
-// Redefine __cplusplus to correct version: https://www.visualmicro.com/forums/YaBB.pl?num=1592217268
-#undef __cplusplus
-#define __cplusplus 201103L
+typedef int __SIZE_TYPE__;
+typedef int __builtin_va_list;
+typedef int __builtin_arm_nop;
+typedef int __builtin_arm_wfi;
+typedef int __builtin_arm_wfe;
+typedef int __builtin_arm_sev;
+typedef int __builtin_arm_isb;
+typedef int __builtin_arm_dsb;
+typedef int __builtin_arm_dmb;
+typedef int __builtin_bswap32;
+typedef int __builtin_bswap16;
+#define _Pragma(x)
+#define __ASM
+#define __INLINE
+#define _PTR void *
+#define __INTPTR_TYPE__ int
+#define __INT32_TYPE__ long int
+#define __UINT32_TYPE__ long int
+#define __VALIST char*
+#define __INT8_TYPE__ int
+#define __UINT8_TYPE__ int
+#define __INT16_TYPE__ long
+#define __UINT16_TYPE__ long
+#define __INT64_TYPE__ long long
+#define __UINT64_TYPE__ long long
 
-//#define GCC_VERSION 40902
-//https://www.visualmicro.com/forums/YaBB.pl?num=1569762585/5#5
-#define __GNUC__             5
-#define __GNUC_MINOR__       4
-#define __GNUC_PATCHLEVEL__  0
-#define GCC_VERSION ((__GNUC__*10000)+(__GNUC_MINOR__*100)+__GNUC_PATCHLEVEL__)) 
+#include "samd.h"
+//#include "samd21/include/samd21.h"
 
-
-#define volatile(va_arg) 
-#define _CONST
-#define __builtin_va_start
-#define __builtin_va_end
-#define __attribute__(...)
-#define NOINLINE __attribute__((noinline))
-#define prog_void
-#define PGM_VOID_P int
-
-
-#ifndef __builtin_constant_p
-	#define __builtin_constant_p __attribute__((__const__))
-#endif
-#ifndef __builtin_strlen
-	#define __builtin_strlen  __attribute__((__const__))
-#endif
-
-
-#define NEW_H
-typedef void *__builtin_va_list;
-//extern "C" void __cxa_pure_virtual() {;}
-
-typedef int div_t;
-typedef int ldiv_t;
-
-
-typedef void *__builtin_va_list;
-//extern "C" void __cxa_pure_virtual() {;}
-
+extern void* malloc(size_t __size); 
 
 
 #include "arduino.h"
 #include <pins_arduino.h> 
-#include <timers.h> 
-//#undef F
-//#define F(string_literal) ((const PROGMEM char *)(string_literal))
-#undef PSTR
-#define PSTR(string_literal) ((const PROGMEM char *)(string_literal))
+#include <variant.h> 
+#include <variant.cpp> 
 
-//typedef unsigned char uint8_t;
-//typedef unsigned int uint8_t;
+#ifndef __math_68881
+extern double atan(double);
+extern double cos(double);
+extern double sin(double);
+extern double tan(double);
+extern double tanh(double);
+extern double frexp(double, int *);
+extern double modf(double, double *);
+extern double ceil(double);
+extern double fabs(double);
+extern double floor(double);
+#endif 
 
-#define pgm_read_byte_near(address_short) uint8_t()
-#define pgm_read_byte(address_short) uint8_t() 
-#define pgm_read_word(address_short) uint16_t() 
-#define pgm_read_dword(address_short) uint32_t()
-#define pgm_read_float(address_short) float()
-#define pgm_read_ptr(address_short)   short()
+#ifndef __math_68881
+extern double acos(double);
+extern double asin(double);
+extern double atan2(double, double);
+extern double cosh(double);
+extern double sinh(double);
+extern double exp(double);
+extern double ldexp(double, int);
+extern double log(double);
+extern double log10(double);
+extern double pow(double, double);
+extern double sqrt(double);
+extern double fmod(double, double);
+#endif 
+
+extern int __isinff(float x);
+extern int __isinfd(double x);
+extern int __isnanf(float x);
+extern int __isnand(double x);
+extern int __fpclassifyf(float x);
+extern int __fpclassifyd(double x);
+extern int __signbitf(float x);
+extern int __signbitd(double x);
+extern int finitel(long double);
+extern double infinity(void);
+extern double nan(const char *);
+extern int finite(double);
+extern double copysign(double, double);
+extern double logb(double);
+extern int ilogb(double);
+
+extern double asinh(double);
+extern double cbrt(double);
+extern double nextafter(double, double);
+extern double rint(double);
+extern double scalbn(double, int);
+
+extern double exp2(double);
+extern double scalbln(double, long int);
+extern double tgamma(double);
+extern double nearbyint(double);
+extern long int lrint(double);
+extern long long int llrint(double);
+extern long int lround(double);
+extern long long int llround(double);
+extern double trunc(double);
+extern double remquo(double, double, int *);
+extern double fdim(double, double);
+extern double fmax(double, double);
+extern double fmin(double, double);
+extern double fma(double, double, double);
+
+#ifndef __math_68881
+extern double log1p(double);
+extern double expm1(double);
+#endif 
+
+extern double acosh(double);
+extern double atanh(double);
+extern double remainder(double, double);
+extern double gamma(double);
+extern double lgamma(double);
+extern double erf(double);
+extern double erfc(double);
+extern double log2(double);
+
+#ifndef __math_68881
+extern double hypot(double, double);
+#endif
+
+extern float atanf(float);
+extern float cosf(float);
+extern float sinf(float);
+extern float tanf(float);
+extern float tanhf(float);
+extern float frexpf(float, int *);
+extern float modff(float, float *);
+extern float ceilf(float);
+extern float fabsf(float);
+extern float floorf(float);
+
+#ifndef _REENT_ONLY
+extern float acosf(float);
+extern float asinf(float);
+extern float atan2f(float, float);
+extern float coshf(float);
+extern float sinhf(float);
+extern float expf(float);
+extern float ldexpf(float, int);
+extern float logf(float);
+extern float log10f(float);
+extern float powf(float, float);
+extern float sqrtf(float);
+extern float fmodf(float, float);
+#endif 
+
+extern float exp2f(float);
+extern float scalblnf(float, int);
+extern float tgammaf(float);
+extern float nearbyintf(float);
+extern long int lrintf(float);
+extern long long int llrintf(float);
+extern float roundf(float);
+extern long int lroundf(float);
+extern long long int llroundf(float);
+extern float truncf(float);
+extern float remquof(float, float, int *);
+extern float fdimf(float, float);
+extern float fmaxf(float, float);
+extern float fminf(float, float);
+extern float fmaf(float, float, float);
+
+extern float infinityf(void);
+extern float nanf(const char *);
+extern int finitef(float);
+extern float copysignf(float, float);
+extern float logbf(float);
+extern int ilogbf(float);
+
+extern float asinhf(float);
+extern float cbrtf(float);
+extern float nextafterf(float, float);
+extern float rintf(float);
+extern float scalbnf(float, int);
+extern float log1pf(float);
+extern float expm1f(float);
+
+#ifndef _REENT_ONLY
+extern float acoshf(float);
+extern float atanhf(float);
+extern float remainderf(float, float);
+extern float gammaf(float);
+extern float lgammaf(float);
+extern float erff(float);
+extern float erfcf(float);
+extern float log2f(float);
+extern float hypotf(float, float);
+#endif 
+
+extern double drem(double, double);
+extern void sincos(double, double *, double *);
+extern double gamma_r(double, int *);
+extern double lgamma_r(double, int *);
+
+extern double y0(double);
+extern double y1(double);
+extern double yn(int, double);
+extern double j0(double);
+extern double j1(double);
+extern double jn(int, double);
+
+extern float dremf(float, float);
+extern void sincosf(float, float *, float *);
+extern float gammaf_r(float, int *);
+extern float lgammaf_r(float, int *);
+
+extern float y0f(float);
+extern float y1f(float);
+extern float ynf(int, float);
+extern float j0f(float);
+extern float j1f(float);
+extern float jnf(int, float);
+
+
+
+
+
+
+
+_PTR 	 memchr(const _PTR, int size_t) {
+	return 0;
+}
+
+int 	 memcmp(const _PTR, const _PTR size_t) {
+	return 0;
+}
+
+_PTR 	 memcpy(_PTR __restrict, const _PTR  size_t) {
+	return 0;
+}
+
+_PTR	 memmove(_PTR, const _PTR size_t) {
+	return 0;
+}
+
+_PTR memset(void *, int size_t)
+{
+	return 0;
+}
+
+char 	strcat(char *, const char *) {
+	return 0;
+}
+
+char 	strchr(const char *, int) {
+	return 0;
+}
+
+int	 strcmp(const char *, const char *) {
+	return 0;
+}
+
+int	 strcoll(const char *, const char *) {
+	return 0;
+}
+
+char strcpy(const char *, const char *) {
+	return 0;
+}
+char strcpy(char *, const char *) {
+	return 0;
+}
+char strcpy(char *, char *) {
+	return 0;
+}
+
+size_t	 strcspn(const char *, const char *) {
+	return 0;
+}
+
+char 	*strerror(int) {
+	return 0;
+}
+
+size_t	 strlen(const char *) {
+	return 0;
+}
+
+char 	*strncat(char *, const char * size_t) {
+	return 0;
+}
+
+int	 strncmp(const char *, const char *, size_t) {
+	return 0;
+}
+
+char 	*strncpy(char *__restrict, const char *, size_t) {
+	return 0;
+}
+
+char 	*strpbrk(const char *, const char *) {
+	return 0;
+}
+
+char 	*strrchr(const char *, int) {
+	return 0;
+}
+
+size_t	 strspn(const char *, const char *) {
+	return 0;
+}
+
+char 	*strstr(const char *, const char *) {
+	return 0;
+}
+
+
+#ifndef _REENT_ONLY
+char 	*strtok(char *, const char *) {
+	return 0;
+}
+
+#endif
+
+size_t	 strxfrm(char *, const char *, size_t) {
+	return 0;
+}
+
+
+#ifndef __STRICT_ANSI__
+char 	*strtok_r(char *, const char *, char **) {
+	return 0;
+}
+
+
+int	 bcmp(const void *, const void *, size_t) {
+	return 0;
+}
+
+void	 bcopy(const void *, void *, size_t) {
+
+}
+
+void	 bzero(void *, size_t) {
+
+}
+
+
+char 	*index(const char *, int) {
+	return 0;
+}
+
+_PTR	 memccpy(_PTR, const _PTR, int, size_t) {
+	return 0;
+}
+
+_PTR	 mempcpy(_PTR, const _PTR, size_t) {
+	return 0;
+}
+
+_PTR	 memmem(const _PTR, size_t, const _PTR, size_t) {
+	return 0;
+}
+
+_PTR 	 memrchr(const _PTR, int, size_t) {
+	return 0;
+}
+
+_PTR 	 rawmemchr(const _PTR, int) {
+	return 0;
+}
+
+char 	*rindex(const char *, int) {
+	return 0;
+}
+
+char 	*stpcpy(char *, const char *) {
+	return 0;
+}
+
+char 	*stpncpy(char *, const char *, size_t) {
+	return 0;
+}
+
+int	 strcasecmp(const char *, const char *) {
+	return 0;
+}
+
+char	*strcasestr(const char *, const char *) {
+	return 0;
+}
+
+char 	*strchrnul(const char *, int) {
+	return 0;
+}
+
+int snprintf(const char *, ...) {
+	return 0;
+}
+
+int sprintf(const char *, ...) {
+	return 0;
+}
+
+int fprintf(const char *, ...) {
+	return 0;
+}
+
+int printf(const char *, ...) {
+	return 0;
+}
+#endif
 
 #include "HeRoWatering.ino"
 #endif
